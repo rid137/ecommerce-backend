@@ -19,10 +19,8 @@ interface UploadResponse {
 }
 
 export const uploadFiles = asyncHandler(async (req, res) => {
-  // Extract files from the request (handled by express-formidable middleware)
   const files = (req as any).files?.files;
 
-  // Validate that files were uploaded
   if (!files) {
     throw BadRequest("No files uploaded");
   }
@@ -30,13 +28,11 @@ export const uploadFiles = asyncHandler(async (req, res) => {
   // Normalize to array format (handles both single file and multiple files)
   const filesArray = Array.isArray(files) ? files : [files];
 
-  // Array to store successfully uploaded files metadata
   const uploadedFiles: UploadedFile[] = [];
   
   // Process each file sequentially
   for (const file of filesArray) {
     try {
-      // Get temporary file path and original filename from formidable
       const tempFilePath = file.path;
       const originalFilename = file.name;
 
@@ -58,9 +54,9 @@ export const uploadFiles = asyncHandler(async (req, res) => {
       const result = await new Promise<UploadApiResponse>((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
-            folder: "product-listing",  // Organize files in Cloudinary
-            resource_type: "auto",     // Auto-detect file type
-            public_id: publicId        // Custom identifier
+            folder: "product-listing",
+            resource_type: "auto",    
+            public_id: publicId        
           },
           (error, result) => {
             if (error) {
@@ -79,9 +75,9 @@ export const uploadFiles = asyncHandler(async (req, res) => {
 
       // Store successful upload metadata
       uploadedFiles.push({
-        url: result.secure_url,      // HTTPS URL
-        public_id: result.public_id, // Cloudinary identifier
-        originalFilename            // Original filename for reference
+        url: result.secure_url,    
+        public_id: result.public_id, 
+        originalFilename            
       });
 
       // Clean up temporary file
@@ -95,7 +91,6 @@ export const uploadFiles = asyncHandler(async (req, res) => {
     }
   }
 
-  // Validate at least one file was successfully uploaded
   if (uploadedFiles.length === 0) {
     throw new Error("All file uploads failed");
   }
@@ -103,8 +98,8 @@ export const uploadFiles = asyncHandler(async (req, res) => {
   // Prepare response object
   const response: UploadResponse = {
     success: true,
-    uploadedFiles,  // Array of uploaded file metadata
-    count: uploadedFiles.length,  // Number of successful uploads
+    uploadedFiles,
+    count: uploadedFiles.length,
     message: uploadedFiles.length === filesArray.length 
       ? "All files uploaded successfully" 
       : `Uploaded ${uploadedFiles.length} of ${filesArray.length} files`
