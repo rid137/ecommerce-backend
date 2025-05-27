@@ -1,6 +1,6 @@
 # 🛍️ E-Commerce Backend API
 
-A robust and scalable e-commerce backend built with **Node.js**, **Express**, and **TypeScript**, designed to handle core business logic, secure authentication, and seamless transactions. This project follows best practices in API design, security, and error handling, and is ready for production deployment.
+A robust and scalable e-commerce backend built with **Node.js**, **Express**, and **TypeScript**, designed to handle core business logic, secure authentication, and seamless transactions. This project follows best practices in API design, security, and error handling.
 
 ---
 
@@ -32,7 +32,7 @@ A robust and scalable e-commerce backend built with **Node.js**, **Express**, an
 - **Paystack API** (Payment Integration)
 - **Cloudinary** (File Uploads)
 - **Nodemailer** (Email Notification)
-- **Multer** (for handling file uploads)
+- **Formidable** (for handling file uploads)
 - **dotenv** for environment configuration
 
 ---
