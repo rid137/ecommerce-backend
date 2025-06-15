@@ -8,13 +8,16 @@ import crypto from "crypto";
 import { BadRequest, NotFound } from "../errors/httpErrors";
 import { successResponse, createdResponse } from "../utils/apiResponse";
 
+
+//TODO: Refactor this code, use Class and Service instead
+
 // Register user
 const register = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body || {};
 
-  if (!username || !email || !password) {
-    throw BadRequest("Please fill all the inputs.");
-  }
+  // if (!username || !email || !password) {
+  //   throw BadRequest("Please fill all the inputs.");
+  // }
 
   const userExists = await User.findOne({ email });
   if (userExists) throw BadRequest("User already exists");
