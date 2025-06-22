@@ -124,6 +124,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     // "types": ["node", "express"],
+    "types": ["@types/node", "@types/express"],
     "outDir": "./dist",
     "skipLibCheck": true
   },
