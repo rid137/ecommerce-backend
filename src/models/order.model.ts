@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-// Define the types for the nested objects (orderItems, shippingAddress, paymentResult)
 interface OrderItem {
   name: string;
   qty: number;
