@@ -26,7 +26,7 @@ class TransactionController {
   });
 
   getUserTransactions = asyncHandler(async (req, res) => {
-    const transactions = await TransactionService.getUserTransactions(req.user._id);
+    const transactions = await TransactionService.getUserTransactions(req.body.user._id);
     successResponse(res, transactions, "User transactions retrieved successfully");
   });
 }

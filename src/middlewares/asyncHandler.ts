@@ -11,10 +11,10 @@ export interface AuthenticatedRequest extends Request {
 }
 
 const asyncHandler = (
-  fn: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Promise<any>
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
 ) =>
   (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req as AuthenticatedRequest, res, next)).catch(next);
+    Promise.resolve(fn(req as Request, res, next)).catch(next);
 };
 
 export default asyncHandler;

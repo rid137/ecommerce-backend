@@ -39,7 +39,7 @@ class ProductController {
 
   addProductReview = asyncHandler(async (req, res) => {
     const { rating, comment } = req.body
-    const review = await productService.addProductReview(req.params.id, req.user, rating, comment);
+    const review = await productService.addProductReview(req.params.id, req.body.user, rating, comment);
     createdResponse(res, review, "Review added successfully");
   });
 
