@@ -2,8 +2,13 @@ import authService from "../services/auth.service";
 import { createdResponse, successResponse } from "../utils/apiResponse";
 import createToken from "../utils/createToken";
 import asyncHandler from "../middlewares/asyncHandler";
+import { Request, Response } from "express";
 
 class AuthController {
+  async getCurrentUser(req: Request, res: Response) {
+    const {userEmail} = req.body
+
+  }
   register = asyncHandler(async (req, res) => {
     const user = await authService.register(req.body);
     createToken(res, user._id.toString());

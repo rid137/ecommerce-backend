@@ -5,7 +5,7 @@ import orderService from "../services/order.service";
 class OrderController {
   createOrder = asyncHandler(async (req, res) => {
     const { orderItems, shippingAddress, paymentMethod } = req.body;
-    const order = await orderService.createOrder(req.user._id, orderItems, shippingAddress, paymentMethod);
+    const order = await orderService.createOrder(req.body.user._id, orderItems, shippingAddress, paymentMethod);
     createdResponse(res, order, "Order created successfully");
   });
 
@@ -21,7 +21,7 @@ class OrderController {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
 
-    const { orders, pagination } = await orderService.getUserOrders(req.user._id, page, size);
+    const { orders, pagination } = await orderService.getUserOrders(req.body.user._id, page, size);
     paginatedResponse(res, orders, pagination, "User orders retrieved successfully");
   });
 
