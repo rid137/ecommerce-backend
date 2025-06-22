@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User from "../models/userModel";
+import User from "../models/user.model";
 import asyncHandler from "./asyncHandler";
 
 interface DecodedToken {
@@ -10,7 +10,6 @@ interface DecodedToken {
 const authenticate = asyncHandler(async (req: Request & { user?: any }, res: Response, next: NextFunction) => {
   let token;
 
-  // Read JWT from the 'jwt' cookie
   token = req.cookies?.jwt;
 
   if (token) {
