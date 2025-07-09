@@ -1,6 +1,7 @@
 import User from "../models/user.model";
 import bcrypt from "bcryptjs";
 import { BadRequest, NotFound } from "../errors/httpErrors";
+import { Types } from "mongoose";
 
 class UserService {
   async getAllUsers() {
@@ -13,13 +14,13 @@ class UserService {
     return users;
   }
 
-  async getCurrentUser(userId: string) {
+  async getCurrentUser(userId: Types.ObjectId) {
     const user = await User.findById(userId).select("-password");
     if (!user) throw NotFound("User not found");
     return user;
   }
 
-  async updateCurrentUser(userId: string, updates: Partial<{ username: string; email: string; password: string }>) {
+  async updateCurrentUser(userId: Types.ObjectId, updates: Partial<{ username: string; email: string; password: string }>) {
     const user = await User.findById(userId);
     if (!user) throw NotFound("User not found");
 

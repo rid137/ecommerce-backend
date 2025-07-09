@@ -1,19 +1,23 @@
 import asyncHandler from "../middlewares/asyncHandler";
 import TransactionService from "../services/transaction.service";
 import { successResponse, paginatedResponse } from "../utils/apiResponse";
+import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../utils/authTypes";
 
 class TransactionController {
-  removeTransaction = asyncHandler(async (req, res) => {
-    const transaction = await TransactionService.deleteTransaction(req.params.id);
+  async removeTransaction(req: Request, res: Response) {
+    const { id } = req.params;
+    const transaction = await TransactionService.deleteTransaction(id);
     successResponse(res, transaction, "Transaction removed successfully");
-  });
+  }
 
-  readTransaction = asyncHandler(async (req, res) => {
-    const transaction = await TransactionService.getTransaction(req.params.id);
+  async readTransaction(req: Request, res: Response) {
+    const { id } = req.params;
+    const transaction = await TransactionService.getTransaction(id);
     successResponse(res, transaction, "Transaction retrieved successfully");
-  });
+  }
 
-  listTransactions = asyncHandler(async (req, res) => {
+  async listTransactions(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
 
@@ -23,12 +27,13 @@ class TransactionController {
       size,
     });
     paginatedResponse(res, transactions, pagination, "Transactions retrieved successfully");
-  });
+  }
 
-  getUserTransactions = asyncHandler(async (req, res) => {
-    const transactions = await TransactionService.getUserTransactions(req.body.user._id);
+  async getUserTransactions(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user?._id
+    const transactions = await TransactionService.getUserTransactions(userId!);
     successResponse(res, transactions, "User transactions retrieved successfully");
-  });
+  }
 }
 
 export default new TransactionController();
