@@ -1,42 +1,49 @@
 import userService from "../services/user.service";
 import { successResponse } from "../utils/apiResponse";
 import asyncHandler from "../middlewares/asyncHandler";
+import { Request, Response } from "express";
+import { AuthenticatedRequest } from "../utils/authTypes";
 
 class UserController {
-  getAllUsers = asyncHandler(async (_req, res) => {
+  async getAllUsers(req: Request, res: Response) {
     const users = await userService.getAllUsers();
-    return successResponse(res, users, "Users retrieved successfully");
-  });
+    successResponse(res, users, "Users retrieved successfully");
+  }
 
-  getAllAdminUsers = asyncHandler(async (_req, res) => {
+  async getAllAdminUsers(req: Request, res: Response) {
     const users = await userService.getAllAdminUsers();
-    return successResponse(res, users, "Admin users retrieved successfully");
-  });
+    successResponse(res, users, "Admin users retrieved successfully");
+  }
 
-  getCurrentUserProfile = asyncHandler(async (req, res) => {
-    const user = await userService.getCurrentUser(req.body.user._id);
-    return successResponse(res, user, "User profile retrieved successfully");
-  });
+  async getCurrentUserProfile(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user?._id
+    const user = await userService.getCurrentUser(userId!);
+    successResponse(res, user, "User profile retrieved successfully");
+  }
 
-  updateCurrentUserProfile = asyncHandler(async (req, res) => {
-    const updatedUser = await userService.updateCurrentUser(req.body.user._id, req.body);
-    return successResponse(res, updatedUser, "Profile updated successfully");
-  });
+  async updateCurrentUserProfile(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user?._id
+    const updatedUser = await userService.updateCurrentUser(userId!, req.body);
+    successResponse(res, updatedUser, "Profile updated successfully");
+  }
 
-  deleteUserById = asyncHandler(async (req, res) => {
-    const deletedUser = await userService.deleteUserById(req.params.id);
-    return successResponse(res, deletedUser, "User removed successfully");
-  });
+  async deleteUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    const deletedUser = await userService.deleteUserById(id);
+    successResponse(res, deletedUser, "User removed successfully");
+  }
 
-  getUserById = asyncHandler(async (req, res) => {
-    const user = await userService.getUserById(req.params.id);
-    return successResponse(res, user, "User retrieved successfully");
-  });
+  async getUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    const user = await userService.getUserById(id);
+    successResponse(res, user, "User retrieved successfully");
+  }
 
-  updateUserById = asyncHandler(async (req, res) => {
-    const updatedUser = await userService.updateUserById(req.params.id, req.body);
-    return successResponse(res, updatedUser, "User updated successfully");
-  });
+  async updateUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    const updatedUser = await userService.updateUserById(id, req.body);
+    successResponse(res, updatedUser, "User updated successfully");
+  }
 }
 
 export default new UserController();

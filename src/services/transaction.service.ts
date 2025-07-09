@@ -1,5 +1,5 @@
 import Transaction from "../models/transaction.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { BadRequest, NotFound } from "../errors/httpErrors";
 
 interface TransactionFilter {
@@ -78,7 +78,7 @@ class TransactionService {
         };
     }
 
-    async getUserTransactions(userId: string) {
+    async getUserTransactions(userId: Types.ObjectId) {
         return Transaction.find({ user: userId })
         .sort({ createdAt: -1 })
         .populate("user", "username email");

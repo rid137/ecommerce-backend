@@ -2,9 +2,10 @@ import { successResponse } from "../utils/apiResponse";
 import { BadRequest } from "../errors/httpErrors";
 import uploadService from "../services/upload.service";
 import asyncHandler from "../middlewares/asyncHandler";
+import { Request, Response } from "express";
 
 class UploadController {
-  uploadFiles = asyncHandler(async (req, res) => {
+  async uploadFiles(req: Request, res: Response) {
     const files = (req as any).files?.files;
 
     if (!files) {
@@ -26,7 +27,7 @@ class UploadController {
           ? "All files uploaded successfully"
           : `Uploaded ${uploadedFiles.length} of ${Array.isArray(files) ? files.length : 1} files`,
     });
-  });
+  };
 }
 
 export default new UploadController();

@@ -1,60 +1,68 @@
+import { Request, Response } from "express";
 import { createdResponse, paginatedResponse, successResponse } from "../utils/apiResponse";
-import asyncHandler from "../middlewares/asyncHandler";
 import orderService from "../services/order.service";
+import { UserDocument } from "../models/user.model";
+import { AuthenticatedRequest } from "../utils/authTypes";
+
+// interface AuthenticatedRequest extends Request {
+//   user?: UserDocument;
+// }
 
 class OrderController {
-  createOrder = asyncHandler(async (req, res) => {
+  async createOrder(req: AuthenticatedRequest, res: Response) {
     const { orderItems, shippingAddress, paymentMethod } = req.body;
-    const order = await orderService.createOrder(req.body.user._id, orderItems, shippingAddress, paymentMethod);
-    createdResponse(res, order, "Order created successfully");
-  });
+    const userId = req.user?._id
 
-  getAllOrders = asyncHandler(async (req, res) => {
+    const order = await orderService.createOrder(userId!, orderItems, shippingAddress, paymentMethod);
+    createdResponse(res, order, "Order created successfully");
+  }
+
+  async getAllOrders(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
 
     const { orders, pagination } = await orderService.getAllOrders(page, size);
     paginatedResponse(res, orders, pagination, "Orders retrieved successfully");
-  });
+  }
 
-  getUserOrders = asyncHandler(async (req, res) => {
+  async getUserOrders(req: AuthenticatedRequest, res: Response) {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
+    const userId = req.user?._id
 
-    const { orders, pagination } = await orderService.getUserOrders(req.body.user._id, page, size);
+    const { orders, pagination } = await orderService.getUserOrders(userId!, page, size);
     paginatedResponse(res, orders, pagination, "User orders retrieved successfully");
-  });
+  }
 
-  findOrderById = asyncHandler(async (req, res) => {
+  async findOrderById(req: Request, res: Response) {
     const order = await orderService.findOrderById(req.params.id);
     successResponse(res, order, "Order retrieved successfully");
-  });
+  }
 
-  markOrderAsPaid = asyncHandler(async (req, res) => {
+  async markOrderAsPaid(req: Request, res: Response) {
     const updated = await orderService.markAsPaid(req.params.id, req.body);
     successResponse(res, updated, "Order marked as paid");
-  });
+  }
 
-  markOrderAsDelivered = asyncHandler(async (req, res) => {
+  async markOrderAsDelivered(req: Request, res: Response) {
     const updated = await orderService.markAsDelivered(req.params.id);
     successResponse(res, updated, "Order marked as delivered");
-  });
+  }
 
-  countTotalOrders = asyncHandler(async (_req, res) => {
+  async countTotalOrders(_req: Request, res: Response) {
     const totalOrders = await orderService.countTotalOrders();
     successResponse(res, { totalOrders }, "Total orders count retrieved");
-  });
+  }
 
-  calculateTotalSales = asyncHandler(async (_req, res) => {
+  async calculateTotalSales(_req: Request, res: Response) {
     const totalSales = await orderService.calculateTotalSales();
     successResponse(res, { totalSales }, "Total sales calculated");
-  });
+  }
 
-  calculateTotalSalesByDate = asyncHandler(async (_req, res) => {
+  async calculateTotalSalesByDate(_req: Request, res: Response) {
     const result = await orderService.calculateTotalSalesByDate();
     successResponse(res, { salesByDate: result }, "Sales by date calculated");
-  });
+  }
 }
-
 
 export default new OrderController();

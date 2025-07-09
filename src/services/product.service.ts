@@ -1,6 +1,8 @@
 import Product from "../models/product.model";
 import { Conflict, NotFound } from "../errors/httpErrors";
 import { ProductFields } from "../dtos/createProduct.dto";
+import { Types } from "mongoose";
+import { UserDocument } from "../models/user.model";
 
 class ProductService {
     async createProduct(fields: ProductFields) {
@@ -75,7 +77,7 @@ class ProductService {
         return products;
     }
 
-    async addProductReview(productId: string, user: any, rating: number, comment: string) {
+    async addProductReview(productId: string, user: UserDocument, rating: number, comment: string) {
         const product = await Product.findById(productId);
         if (!product) throw NotFound("Product not found");
 

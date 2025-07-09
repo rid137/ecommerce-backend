@@ -2,6 +2,7 @@ import Order from "../models/order.model";
 import Product from "../models/product.model";
 import { NotFound } from "../errors/httpErrors";
 import { OrderItemInput } from "../dtos/createOrder.dto";
+import { Types } from 'mongoose';
 
 function calcPrices(orderItems: OrderItemInput[]) {
     const itemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.qty, 0);
@@ -19,7 +20,7 @@ function calcPrices(orderItems: OrderItemInput[]) {
 }
 
 class OrderService {
-    async createOrder(userId: string, orderItems: OrderItemInput[], shippingAddress: any, paymentMethod: string) {
+    async createOrder(userId: Types.ObjectId, orderItems: OrderItemInput[], shippingAddress: any, paymentMethod: string) {
         const itemsFromDB = await Product.find({ _id: { $in: orderItems.map(i => i._id) } });
 
         const dbOrderItems = orderItems.map(item => {
@@ -71,7 +72,7 @@ class OrderService {
         };
     }
 
-    async getUserOrders(userId: string, page: number, size: number) {
+    async getUserOrders(userId: Types.ObjectId, page: number, size: number) {
         const perPage = size || 10;
         const currentPage = page || 1;
 
