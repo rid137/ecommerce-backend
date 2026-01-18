@@ -1,0 +1,54 @@
+paths:
+  /uploads:
+    post:
+      tags: [Uploads]
+      summary: Upload multiple or single files
+      description: |
+        Uploads images or files to Cloudinary. 
+        The request must be `multipart/form-data`. 
+        The field name for the files must be **`files`**.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: One or more files to upload.
+      responses:
+        200:
+          description: Upload results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          success: { type: boolean, example: true }
+                          uploadedFiles:
+                            type: array
+                            items: { $ref: "#/components/schemas/UploadedFile" }
+                          count: { type: integer, example: 1 }
+                          message:
+                            {
+                              type: string,
+                              example: "All files uploaded successfully",
+                            }
+        400:
+          description: No files provided or all uploads failed (ERR_VALID)
+          $ref: "#/components/schemas/responses/BadRequest"
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+        500:
+          $ref: "#/components/schemas/responses/InternalServerError"

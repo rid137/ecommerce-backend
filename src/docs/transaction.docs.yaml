@@ -1,0 +1,158 @@
+paths:
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List and filter transactions (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: transactionId
+          schema: { type: string }
+          description: Filter by specific MongoDB ID
+        - in: query
+          name: status
+          schema: { type: string }
+          description: Filter by status (e.g., pending, success, failed)
+        - in: query
+          name: from
+          schema: { type: string, format: date }
+          description: Start date (YYYY-MM-DD)
+        - in: query
+          name: to
+          schema: { type: string, format: date }
+          description: End date (YYYY-MM-DD)
+      responses:
+        200:
+          description: A paginated list of transactions
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Transaction" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+
+  /transactions/my-transactions:
+    get:
+      tags: [Transactions]
+      summary: Get logged-in user's transactions (Paginated & Filterable)
+      description: Retrieve your own transaction history with support for pagination and status/date filters.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string }
+          description: Filter your transactions by status (e.g., pending, success)
+        - in: query
+          name: from
+          schema: { type: string, format: date }
+          description: Start date (YYYY-MM-DD)
+        - in: query
+          name: to
+          schema: { type: string, format: date }
+          description: End date (YYYY-MM-DD)
+      responses:
+        200:
+          description: Paginated transaction history for the user
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Transaction" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+
+  /transactions/{id}:
+    get:
+      tags: [Transactions]
+      summary: Get transaction details by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Transaction retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Transaction" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+    delete:
+      tags: [Transactions]
+      summary: Remove a transaction record (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Transaction deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Transaction" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"

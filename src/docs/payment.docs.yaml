@@ -1,0 +1,74 @@
+paths:
+  /payments/initialize:
+    post:
+      tags: [Payments]
+      summary: Initialize a Paystack payment session
+      description: Creates a transaction record and generates a Paystack authorization URL.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, email]
+              properties:
+                orderId: { type: string, example: "65a123..." }
+                email:
+                  { type: string, format: email, example: "user@example.com" }
+      responses:
+        200:
+          description: Payment initialized. Redirect the user to authorization_url.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          authorization_url:
+                            {
+                              type: string,
+                              example: "https://checkout.paystack.com/...",
+                            }
+                          reference: { type: string, example: "65a123..." }
+                          access_code: { type: string }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+        500:
+          $ref: "#/components/schemas/responses/InternalServerError"
+
+  /payments/verify:
+    get:
+      tags: [Payments]
+      summary: Verify a completed payment
+      description: Use the reference returned by Paystack to confirm the payment status and update the order.
+      parameters:
+        - in: query
+          name: reference
+          required: true
+          schema: { type: string }
+          description: The transaction reference (usually the Order ID)
+      responses:
+        200:
+          description: Payment verified and order updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order: { $ref: "#/components/schemas/Order" }
+        400:
+          description: Verification failed (ERR_VALID)
+          $ref: "#/components/schemas/responses/BadRequest"
+        404:
+          $ref: "#/components/schemas/responses/NotFound"

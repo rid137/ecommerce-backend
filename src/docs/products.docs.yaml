@@ -1,0 +1,273 @@
+paths:
+  /products:
+    get:
+      tags: [Products]
+      summary: Fetch paginated products with search
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: keyword
+          schema: { type: string }
+          description: Search by name, description, or brand
+      responses:
+        200:
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Product" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+
+    post:
+      tags: [Products]
+      summary: Add a new product (Admin Only)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                [
+                  name,
+                  brand,
+                  quantity,
+                  category,
+                  description,
+                  images,
+                  price,
+                  countInStock,
+                ]
+              properties:
+                name: { type: string, example: "Wireless Headphones" }
+                brand: { type: string, example: "Sony" }
+                quantity: { type: number, example: 50 }
+                category: { type: string, example: "65a123..." }
+                description:
+                  { type: string, example: "Noise cancelling headphones" }
+                images: { type: array, items: { type: string } }
+                price: { type: number, example: 199.99 }
+                countInStock: { type: number, example: 50 }
+      responses:
+        201:
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Product" }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+        403:
+          $ref: "#/components/schemas/responses/Forbidden"
+
+  /products/{id}:
+    get:
+      tags: [Products]
+      summary: Get product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Product details retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Product" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+    put:
+      tags: [Products]
+      summary: Update product details (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Product" }
+      responses:
+        200:
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Product" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+    delete:
+      tags: [Products]
+      summary: Remove a product (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Product deleted successfully
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+  /products/top:
+    get:
+      tags: [Products]
+      summary: Get top rated products
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        {
+                          type: array,
+                          items: { $ref: "#/components/schemas/Product" },
+                        }
+
+  /products/new:
+    get:
+      tags: [Products]
+      summary: Get new arrivals
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        {
+                          type: array,
+                          items: { $ref: "#/components/schemas/Product" },
+                        }
+
+  /products/filtered-products:
+    post:
+      tags: [Products]
+      summary: Filter products by category and price
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checked:
+                  {
+                    type: array,
+                    items: { type: string },
+                    description: "Array of category IDs",
+                  }
+                radio:
+                  {
+                    type: array,
+                    items: { type: number },
+                    description: "[minPrice, maxPrice]",
+                  }
+      responses:
+        200:
+          description: Filtered results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        {
+                          type: array,
+                          items: { $ref: "#/components/schemas/Product" },
+                        }
+
+  /products/{id}/reviews:
+    post:
+      tags: [Products]
+      summary: Add a product review
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating, comment]
+              properties:
+                rating: { type: number, minimum: 1, maximum: 5 }
+                comment: { type: string }
+      responses:
+        201:
+          description: Review added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Review" }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        409:
+          $ref: "#/components/schemas/responses/Conflict"

@@ -31,9 +31,35 @@ class TransactionController {
 
   async getUserTransactions(req: AuthenticatedRequest, res: Response) {
     const userId = req.user?._id
-    const transactions = await TransactionService.getUserTransactions(userId!);
-    successResponse(res, transactions, "User transactions retrieved successfully");
+
+    const { transactions, pagination } = await TransactionService.getUserTransactions(
+      userId!,
+      req.query
+    );
+    paginatedResponse(res, transactions, pagination, "User transactions retrieved successfully");
   }
+
+  // async getUserTransactions(req: AuthenticatedRequest, res: Response) {
+  //   const userId = req.user?._id;
+  //   // Pass the query params (page, size, status, etc.) to the service
+  //   const { transactions, pagination } = await TransactionService.getUserTransactions(userId!, req.query);
+  //   paginatedResponse(res, transactions, pagination, "User transactions retrieved successfully");
+  // }
+
+  // async getUserOrders(req: AuthenticatedRequest, res: Response) {
+  //     const page = parseInt(req.query.page as string) || 1;
+  //     const size = parseInt(req.query.size as string) || 10;
+  //     const userId = req.user?._id
+  
+  //     const { orders, pagination } = await orderService.getUserOrders(userId!, page, size);
+  //     paginatedResponse(res, orders, pagination, "User orders retrieved successfully");
+  //   }
+
+  // async getUserTransactions(req: AuthenticatedRequest, res: Response) {
+  //   const userId = req.user?._id
+  //   const transactions = await TransactionService.getUserTransactions(userId!);
+  //   successResponse(res, transactions, "User transactions retrieved successfully");
+  // }
 }
 
 export default new TransactionController();

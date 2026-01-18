@@ -1,0 +1,120 @@
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username: { type: string, example: "johndoe" }
+                email:
+                  { type: string, format: email, example: "john@example.com" }
+                password: { type: string, minLength: 6, example: "password123" }
+      responses:
+        201:
+          description: User registered successfully (OTP sent to email)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/UserAuthData" }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        409:
+          $ref: "#/components/schemas/responses/Conflict"
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  { type: string, format: email, example: "john@example.com" }
+                password: { type: string, example: "password123" }
+      responses:
+        200:
+          description: Login successful (Sets JWT Cookie)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/UserAuthData" }
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+
+  /auth/request-otp:
+    post:
+      tags: [Authentication]
+      summary: Request email verification OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        200:
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+  /auth/verify-otp:
+    post:
+      tags: [Authentication]
+      summary: Verify OTP code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code]
+              properties:
+                email: { type: string, format: email }
+                code: { type: string, example: "123456" }
+      responses:
+        200:
+          description: Verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        422:
+          $ref: "#/components/schemas/responses/UnprocessableEntity"
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Clear user session
+      responses:
+        200:
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"

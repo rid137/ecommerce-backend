@@ -1,0 +1,154 @@
+paths:
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List all categories (Paginated)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, default: 10 }
+      responses:
+        200:
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Category" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+        500:
+          $ref: "#/components/schemas/responses/InternalServerError"
+
+    post:
+      tags: [Categories]
+      summary: Create a new category (Admin Only)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 32, example: "Electronics" }
+      responses:
+        201:
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Category" }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        401:
+          $ref: "#/components/schemas/responses/Unauthorized"
+        403:
+          $ref: "#/components/schemas/responses/Forbidden"
+        409:
+          $ref: "#/components/schemas/responses/Conflict"
+
+  /categories/{id}:
+    get:
+      tags: [Categories]
+      summary: Get category by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, example: "65a123..." }
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Category" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+    put:
+      tags: [Categories]
+      summary: Update category (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, example: "Home Appliances" }
+      responses:
+        200:
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Category" }
+        400:
+          $ref: "#/components/schemas/responses/BadRequest"
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+        409:
+          $ref: "#/components/schemas/responses/Conflict"
+
+    delete:
+      tags: [Categories]
+      summary: Remove category (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Category" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"

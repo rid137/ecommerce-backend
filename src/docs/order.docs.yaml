@@ -1,0 +1,248 @@
+paths:
+  /orders:
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderItems, shippingAddress, paymentMethod]
+              properties:
+                orderItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id: { type: string, description: "Product ID" }
+                      qty: { type: number }
+                shippingAddress:
+                  $ref: "#/components/schemas/Order/properties/shippingAddress"
+                paymentMethod: { type: string, example: "PayPal" }
+      responses:
+        201:
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Order" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+    get:
+      tags: [Orders]
+      summary: Get all orders (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, default: 10 }
+      responses:
+        200:
+          description: List of all orders
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Order" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+
+  /orders/my-orders:
+    get:
+      tags: [Orders]
+      summary: Get logged-in user's orders
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: User's order history
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items: { $ref: "#/components/schemas/Order" }
+                          meta:
+                            type: object
+                            properties:
+                              currentPage: { type: integer }
+                              perPage: { type: integer }
+                              totalDocuments: { type: integer }
+                              totalPages: { type: integer }
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order details by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Order details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Order" }
+        404:
+          $ref: "#/components/schemas/responses/NotFound"
+
+  /orders/{id}/pay:
+    put:
+      tags: [Orders]
+      summary: Mark order as paid
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id: { type: string }
+                status: { type: string }
+                update_time: { type: string }
+                payer:
+                  type: object
+                  properties:
+                    email_address: { type: string }
+      responses:
+        200:
+          description: Order updated to paid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Order" }
+
+  /orders/{id}/deliver:
+    put:
+      tags: [Orders]
+      summary: Mark order as delivered (Admin Only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Order updated to delivered
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data: { $ref: "#/components/schemas/Order" }
+
+  /orders/total-orders:
+    get:
+      tags: [Analytics]
+      summary: Get total count of orders
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          totalOrders: { type: number }
+
+  /orders/total-sales:
+    get:
+      tags: [Analytics]
+      summary: Calculate total revenue
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          totalSales: { type: number }
+
+  /orders/total-sales-by-date:
+    get:
+      tags: [Analytics]
+      summary: Get sales metrics grouped by date
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          salesByDate:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id: { type: string, example: "2024-05-20" }
+                                totalSales: { type: number }
+                                count: { type: number }
