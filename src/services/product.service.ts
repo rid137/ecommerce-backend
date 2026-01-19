@@ -23,39 +23,43 @@ class ProductService {
         return deleted;
     }
 
-    async fetchPaginatedProducts(keyword: string, page: number, size: number) {
+    async fetchPaginatedProducts(keyword: string, category: string, page: number, size: number) {
         const perPage = size || 10;
         const currentPage = page || 1;
 
-        const search = keyword
-        ? {
-            $or: [
+        const search: any = {};
+
+        if (keyword) {
+            search.$or = [
                 { name: { $regex: keyword, $options: "i" } },
                 { description: { $regex: keyword, $options: "i" } },
                 { brand: { $regex: keyword, $options: "i" } },
-            ],
-            }
-        : {};
+            ];
+        }
+
+        if (category && Types.ObjectId.isValid(category)) {
+            search.category = new Types.ObjectId(category);
+        }
 
         const [products, total] = await Promise.all([
-        Product.find(search)
-            .populate("category")
-            .populate({ path: "reviews.user", select: "-password" })
-            .limit(size)
-            .skip((page - 1) * size)
-            .sort({ createdAt: -1 }),
-        Product.countDocuments(search),
+            Product.find(search)
+                .populate("category")
+                .populate({ path: "reviews.user", select: "-password" })
+                .limit(perPage)
+                .skip((currentPage - 1) * perPage)
+                .sort({ createdAt: -1 }),
+            Product.countDocuments(search),
         ]);
 
         return {
             products,
             pagination: {
-              currentPage,
-              perPage,
-              totalDocuments: total,
-              totalPages: Math.ceil(total / perPage),
+                currentPage,
+                perPage,
+                totalDocuments: total,
+                totalPages: Math.ceil(total / perPage),
             },
-          };
+        };
     }
 
     async fetchProductById(id: string) {

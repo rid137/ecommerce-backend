@@ -23,8 +23,9 @@ class ProductController {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
     const keyword = (req.query.keyword as string) || "";
+    const category = (req.query.category as string) || "";
 
-    const { products, pagination } = await productService.fetchPaginatedProducts(keyword, page, size);
+    const { products, pagination } = await productService.fetchPaginatedProducts(keyword, category, page, size);
     paginatedResponse(res, products, pagination, "Products retrieved successfully");
   }
 
