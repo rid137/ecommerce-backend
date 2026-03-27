@@ -40,9 +40,17 @@ class ProductController {
   }
 
   async addProductReview(req: Request, res: Response) {
-    // const { rating, comment } = req.body;
+    const { rating, comment } = req.body;
+
+    const user = req.user;
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    const review = await productService.addProductReview(req.params.id, user, rating, comment);
+
+
     // const review = await productService.addProductReview(req.params.id, req.user, rating, comment);
-    // createdResponse(res, review, "Review added successfully");
+    createdResponse(res, review, "Review added successfully");
   }
 
   async fetchTopProducts(req: Request, res: Response) {
