@@ -1,5 +1,5 @@
 paths:
-  /api/addresses:
+  /addresses:
     get:
       summary: Get all addresses for authenticated user
       description: Retrieves paginated list of addresses belonging to the authenticated user
@@ -77,7 +77,7 @@ paths:
         "500":
           description: Internal server error
 
-  /api/addresses/{id}:
+  /addresses/{id}:
     get:
       summary: Get a single address by ID
       description: Retrieves a specific address by its ID
@@ -191,7 +191,7 @@ paths:
         "500":
           description: Internal server error
 
-  /api/addresses/{id}/default:
+  /addresses/{id}/default:
     patch:
       summary: Set address as default
       description: Sets a specific address as the default address for the authenticated user
