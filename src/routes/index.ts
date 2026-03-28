@@ -7,6 +7,7 @@ import productRoutes from "./product.route";
 import orderRoutes from "./order.route";
 import paymentRoutes from "./payment.route";
 import transactionRoutes from "./transaction.route";
+import addressRoutes from "./address.route";
 const app = express();
 
 app.use("/auth", authRoutes);
@@ -17,6 +18,7 @@ app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/transactions", transactionRoutes);
+app.use("/address", addressRoutes);
 
 
 export default app;

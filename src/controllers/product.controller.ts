@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { successResponse, createdResponse, paginatedResponse } from "../utils/apiResponse";
 import asyncHandler from "../middlewares/asyncHandler";
 import productService from "../services/product.service";
+import { AuthenticatedRequest } from "../utils/authTypes";
 
 class ProductController {
   async addProduct(req: Request, res: Response) {
@@ -39,7 +40,7 @@ class ProductController {
     successResponse(res, products, "Products retrieved successfully");
   }
 
-  async addProductReview(req: Request, res: Response) {
+  async addProductReview(req: AuthenticatedRequest, res: Response) {
     const { rating, comment } = req.body;
 
     const user = req.user;

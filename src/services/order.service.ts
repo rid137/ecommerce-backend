@@ -24,26 +24,27 @@ class OrderService {
         const itemsFromDB = await Product.find({ _id: { $in: orderItems.map(i => i._id) } });
 
         const dbOrderItems = orderItems.map(item => {
-        const match = itemsFromDB.find(prod => prod._id.toString() === item._id);
-        if (!match) throw NotFound(`Product not found: ${item._id}`);
-        return {
-            ...item,
-            product: item._id,
-            price: match.price,
-        };
+            const match = itemsFromDB.find(prod => prod._id.toString() === item._id);
+            if (!match) throw NotFound(`Product not found: ${item._id}`);
+            
+            return {
+                ...item,
+                product: item._id,
+                price: match.price,
+            };
         });
 
         const { itemsPrice, shippingPrice, taxPrice, totalPrice } = calcPrices(dbOrderItems);
 
         const order = new Order({
-        orderItems: dbOrderItems,
-        user: userId,
-        shippingAddress,
-        paymentMethod,
-        itemsPrice,
-        shippingPrice,
-        taxPrice,
-        totalPrice,
+            orderItems: dbOrderItems,
+            user: userId,
+            shippingAddress,
+            paymentMethod,
+            itemsPrice,
+            shippingPrice,
+            taxPrice,
+            totalPrice,
         });
 
         return await order.save();
