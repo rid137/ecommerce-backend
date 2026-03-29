@@ -12,10 +12,10 @@ class AddressService {
         // const addresses = await Address.find({ userId });
 
         const [addresses, total] = await Promise.all([
-            Address.find({ user: userId })
+            Address.find({ userId })
             .skip((page - 1) * size)
             .limit(size),
-            Address.countDocuments({ user: userId })
+            Address.countDocuments({ userId })
         ]);
 
         return {
@@ -66,7 +66,7 @@ class AddressService {
 
     // Delete an address
     async deleteAddress(addressId: string) {
-        const removed = await Address.findById(addressId);
+        const removed = await Address.findByIdAndDelete(addressId);
         if (!removed) throw NotFound("Address not found");
         
         return removed;

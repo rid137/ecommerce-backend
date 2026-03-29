@@ -1,5 +1,5 @@
 paths:
-  /addresses:
+  /address:
     get:
       summary: Get all addresses for authenticated user
       description: Retrieves paginated list of addresses belonging to the authenticated user
