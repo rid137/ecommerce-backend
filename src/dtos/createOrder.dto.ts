@@ -1,5 +1,6 @@
 export interface OrderItemInput {
-  _id: string; // Product ID
+  // _id: string; // Product ID
+  productId: string;
   name: string;
   qty: number;
   image: string;

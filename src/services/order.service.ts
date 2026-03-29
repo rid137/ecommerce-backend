@@ -21,15 +21,15 @@ function calcPrices(orderItems: OrderItemInput[]) {
 
 class OrderService {
     async createOrder(userId: Types.ObjectId, orderItems: OrderItemInput[], shippingAddress: any, paymentMethod: string) {
-        const itemsFromDB = await Product.find({ _id: { $in: orderItems.map(i => i._id) } });
+        const itemsFromDB = await Product.find({ _id: { $in: orderItems.map(i => i.productId) } });
 
         const dbOrderItems = orderItems.map(item => {
-            const match = itemsFromDB.find(prod => prod._id.toString() === item._id);
-            if (!match) throw NotFound(`Product not found: ${item._id}`);
+            const match = itemsFromDB.find(prod => prod._id.toString() === item.productId);
+            if (!match) throw NotFound(`Product not found: ${item.productId}`);
             
             return {
                 ...item,
-                product: item._id,
+                product: item.productId,
                 price: match.price,
             };
         });

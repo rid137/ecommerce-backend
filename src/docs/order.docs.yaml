@@ -18,7 +18,7 @@ paths:
                   items:
                     type: object
                     properties:
-                      _id: { type: string, description: "Product ID" }
+                      productId: { type: string, description: "Product ID" }
                       qty: { type: number }
                 shippingAddress:
                   $ref: "#/components/schemas/Order/properties/shippingAddress"
