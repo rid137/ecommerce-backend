@@ -43,7 +43,13 @@ class AddressService {
             userId,
             ...addressData,
         });
-        
+
+        const addresses = await Address.find({ userId });
+
+        const isUserDefaultAddress = addresses.some(addr => addr.isDefault);
+        // if user has a default addess, new one cannot be default
+        if (isUserDefaultAddress) throw BadRequest("User already has a default address. Please set this address as default after creation if needed.");
+
         return await address.save();
     }
 
