@@ -11,11 +11,11 @@ const objectId = Joi.string().custom((value, helpers) => {
 export const createOrderSchema = Joi.object({
     orderItems: Joi.array().items(
         Joi.object({
-        _id: objectId.required(),
-        name: Joi.string().required(),
-        qty: Joi.number().required(),
-        image: Joi.string().required(),
-        price: Joi.number().required(),
+            productId: objectId.required(),
+            name: Joi.string().optional(),
+            qty: Joi.number().required(),
+            image: Joi.string().optional(),
+            price: Joi.number().optional(),
         })
     ).min(1).required(),
 

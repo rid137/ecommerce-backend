@@ -38,17 +38,37 @@ class AddressService {
     }
 
     // Create a new address
+    // async createAddress(userId: Types.ObjectId, addressData: CreateAddressDTO) {
+    //     const address = new Address({
+    //         userId,
+    //         ...addressData,
+    //     });
+
+    //     const addresses = await Address.find({ userId });
+
+    //     const isUserDefaultAddress = addresses.find(addr => addr.isDefault);
+    //     console.log("isUserDefaultAddress", isUserDefaultAddress?.isDefault)
+    //     // if user has a default addess, new one cannot be default
+    //     if (isUserDefaultAddress?.isDefault === true) {
+    //         throw BadRequest("User already has a default address. Please set this address as default after creation if needed.");
+    //         // return
+    //     }
+
+    //     return await address.save();
+    // }
     async createAddress(userId: Types.ObjectId, addressData: CreateAddressDTO) {
+        const addresses = await Address.find({ userId });
+        const hasDefaultAddress = addresses.some(addr => addr.isDefault);
+
+        // Only block if the new address is trying to be default
+        if (hasDefaultAddress && addressData.isDefault) {
+            throw BadRequest("User already has a default address. Please set this address as default after creation if needed.");
+        }
+
         const address = new Address({
             userId,
             ...addressData,
         });
-
-        const addresses = await Address.find({ userId });
-
-        const isUserDefaultAddress = addresses.some(addr => addr.isDefault);
-        // if user has a default addess, new one cannot be default
-        if (isUserDefaultAddress) throw BadRequest("User already has a default address. Please set this address as default after creation if needed.");
 
         return await address.save();
     }
