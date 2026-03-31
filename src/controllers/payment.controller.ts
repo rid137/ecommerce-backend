@@ -5,8 +5,8 @@ import asyncHandler from "../middlewares/asyncHandler";
 
 class PaymentController {
   async initializePayment(req: Request, res: Response) {
-    const { orderId, email } = req.body;
-    const result = await paymentService.initializePayment(orderId, email);
+    const { orderId, email, callbackUrl } = req.body;
+    const result = await paymentService.initializePayment(orderId, email, callbackUrl);
     successResponse(res, result, "Payment initialized successfully");
   }
 

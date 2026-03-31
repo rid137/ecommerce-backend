@@ -15,7 +15,7 @@ interface PaystackResponse {
 }
 
 class PaymentService {
-  async initializePayment(orderId: string, email: string) {
+  async initializePayment(orderId: string, email: string, callbackUrl: string) {
     const order = await Order.findById(orderId);
     if (!order) throw NotFound("Order not found");
 
@@ -39,7 +39,8 @@ class PaymentService {
       amount: Math.round(order.totalPrice * 100),
       reference,
       currency: "NGN",
-      callback_url: process.env.FRONTEND_VERIFY_PAYMENT_URL,
+      // callback_url: process.env.FRONTEND_VERIFY_PAYMENT_URL,
+      callback_url: callbackUrl,
     };
 
     const response = await axios.post<PaystackResponse>(
