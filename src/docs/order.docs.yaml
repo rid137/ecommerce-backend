@@ -73,7 +73,7 @@ paths:
                               totalDocuments: { type: integer }
                               totalPages: { type: integer }
 
-  /orders/my-orders:
+  /orders/users:
     get:
       tags: [Orders]
       summary: Get logged-in user's orders
