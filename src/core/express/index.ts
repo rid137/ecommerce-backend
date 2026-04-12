@@ -18,7 +18,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:6500",          
   "http://localhost:6501",         
-  "https://your-frontend.render.com"
+  "https://velora-e-commerce.pages.dev"
 ];
 
 const corsOptions = {
